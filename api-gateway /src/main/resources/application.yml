@@ -1,0 +1,53 @@
+eureka:
+  instance:
+    ip-address: localhost
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8762/eureka/
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/payment/**
+        - id: account-service
+          uri: lb://account-service
+          predicates:
+            - Path=/account/**, /MicrosServices/account/**
+
+        - id: openapi-proxy
+          uri: https://demos.springdoc.org
+          predicates:
+            - Path=/MicrosServices/v3/api-docs/**
+          filters:
+            - RewritePath=/MicrosServices/v3/api-docs/(?<path>.*), /MicrosServices/${path}/v3/api-docs
+
+
+        - id: openapi
+          uri: http://localhost:8080
+          predicates:
+            - Path=/v3/api-docs/**
+          filters:
+            - RewritePath=/v3/api-docs/(?<path>.*), /${path}/v3/api-docs
+
+
+springdoc:
+  cache:
+    disabled: true
+  version: '@springdoc.version@'
+  swagger-ui:
+    use-root-path: true
+  api-docs:
+    version: openapi_3_1
+
+server:
+  max-http-header-size: 16384
+
