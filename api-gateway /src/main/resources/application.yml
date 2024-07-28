@@ -30,7 +30,6 @@ spring:
           filters:
             - RewritePath=/MicrosServices/v3/api-docs/(?<path>.*), /MicrosServices/${path}/v3/api-docs
 
-
         - id: openapi
           uri: http://localhost:8080
           predicates:
